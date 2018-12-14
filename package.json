@@ -6,6 +6,9 @@
   "scripts": {
     "test": "npm test"
   },
+  "dependencies": {
+    "socket.io": "^2.2.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chengquan223/node-tcpserver.git"

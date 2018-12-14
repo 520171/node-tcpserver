@@ -1,0 +1,50 @@
+/* Fix user-agent */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+}
+
+html,
+input {
+    font-family:
+        "HelveticaNeue-Light",
+        "Helvetica Neue Light",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        "Lucida Grande",
+        sans-serif;
+}
+p{
+    margin: 0;
+    padding: 3px 0;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.content{
+    height: 100%;
+    padding: 0 30px;
+}
+
+.header {
+    height: 400px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    padding-left: 5px;
+    margin-bottom: 20px;
+    overflow-y: scroll;
+}
+
+.bottom {
+    bottom: 0;
+}
