@@ -1,0 +1,25 @@
+{
+  "name": "tcpserver",
+  "version": "1.0.0",
+  "description": "node.js创建服务器，websocket通信",
+  "main": "app.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chengquan223/node-tcpserver.git"
+  },
+  "keywords": [
+    "node.js",
+    "server",
+    "tcp",
+    "websocket"
+  ],
+  "author": "JackChen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chengquan223/node-tcpserver/issues"
+  },
+  "homepage": "https://github.com/chengquan223/node-tcpserver#readme"
+}
