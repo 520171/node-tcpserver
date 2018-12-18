@@ -1,0 +1,38 @@
+{
+    "apps": [{
+        "name": "tcpserver",
+        "script": "app.js",
+        "max_memory_restart": "300M",
+        "log_date_format": "YYYY-MM-DD HH:mm Z",
+        "error_file": "/log/tcpserver.error.log",
+        "out_file": "log/tcpserver.out.log",
+        "pid_file": "log/tcpserver.pid",
+        "instances": 1,
+        "min_uptime": "200s",
+        "max_restarts": 10,
+        "cron_restart": "1 0 * * *",
+        "watch": false,
+        "merge_logs": true,
+        "exec_interpreter": "node",
+        "exec_mode": "fork",
+        "autorestart": false,
+        "vizion": false
+    }, {
+        "name": "websocketserver",
+        "script": "server.js",
+        "max_memory_restart": "300M",
+        "log_date_format": "YYYY-MM-DD HH:mm Z",
+        "error_file": "/log/tcpserver.error.log",
+        "out_file": "log/tcpserver.out.log",
+        "pid_file": "log/tcpserver.pid",
+        "min_uptime": "200s",
+        "max_restarts": 10,
+        "cron_restart": "1 0 * * *",
+        "watch": false,
+        "merge_logs": true,
+        "exec_interpreter": "node",
+        "exec_mode": "fork",
+        "autorestart": false,
+        "vizion": false
+    }]
+}

@@ -4,9 +4,11 @@
   "description": "node.js创建服务器，websocket通信",
   "main": "app.js",
   "scripts": {
-    "test": "npm test"
+    "test": "npm test",
+    "pm2": "pm2 start processes.json"
   },
   "dependencies": {
+    "express": "^4.16.4",
     "socket.io": "^2.2.0"
   },
   "repository": {

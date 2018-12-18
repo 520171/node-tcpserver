@@ -30,7 +30,7 @@ io.on('connect', function (socket) {
 
         //当客户端发来消息时，websocket服务器当成一个tcp客户端，并给tcp服务器转发消息
         if (client._handle == null) {
-            client.connect(4455, '127.0.0.1', function () {
+            client.connect(2020, '127.0.0.1', function () {
                 console.log('已连接tcp服务器');
             });
         }
