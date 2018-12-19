@@ -84,6 +84,15 @@ socket.on('server send message', function (data) {
     });
 });
 
+//接收Tcp服务器发来的通知
+socket.on('tcpserver send message', function (data) {
+    $messagelog.append('<p style="color:red"><font style="color:#111;">' + new Date().Format("hh:mm:ss") + '</font>' + data.message + '</p>');
+    chat.addTcpChatMessage({
+        username: data.username,
+        message: data.message
+    });
+});
+
 socket.on('user joined', function (data) {
     chat.addOnlineMessage(data);
 });

@@ -15,14 +15,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //ChatRom
 var onlineUsers = 0;
+var client = new net.Socket();
 io.on('connect', function (socket) {
     var addedUser = false;
-    var client = new net.Socket();
 
     //当客户端执行new message事件时，这里将会监听到
     socket.on('client send message', function (data) {
         console.log('客户端[' + socket.username + ']：' + data);
-        //服务端通知客户端去执行接收事件
+        //websocket服务端通知客户端去执行接收事件
         socket.broadcast.emit('server send message', {
             username: socket.username,
             message: data
@@ -34,21 +34,25 @@ io.on('connect', function (socket) {
                 console.log('已连接tcp服务器');
             });
         }
-        //向tcp服务器发送消息
-        client.write("浏览器：" + data);
+        //向tcp服务器发送来自浏览器、小程序的消息
+        client.write(data);
 
         // 监听tcp服务器传来的data数据，并转发给浏览器
         client.on("data", function (data) {
             var message = data.toString();
             console.log("tcp服务器：" + message);
-            socket.emit('server send message', {
+            socket.emit('tcpserver send message', {
                 username: socket.username,
                 message: message
-            })
+            });
         });
 
         client.on("end", function () {
             console.log('断开与tcp服务器的连接');
+        });
+
+        client.on('error', function() {
+            console.log('【本机提示】服务器异常');
         });
     });
 

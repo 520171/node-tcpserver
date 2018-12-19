@@ -12,23 +12,24 @@ var clients = [];
 
 /* 创建TCP服务器 */
 var server = net.createServer(function (socket) {
+    socket.setKeepAlive(true,3000);
     /* 更新当前客户端数组 */
     socket.name = socket.remoteAddress + ':' + socket.remotePort;
     clients.push(socket);
     console.log('客户端【' + socket.name + '】已上线...');
     showOnline(clients);
-    /* 接收客户端发来的消息 */
+    /* 接收客户端、浏览器、小程序发来的消息 */
     socket.on("data", function (data) {
-        console.log('服务器：已收到客户端【' + socket.name + '】的数据，内容为【' + data + '】');
+        console.log('tcp服务器：已收到客户端【' + socket.name + '】的数据，内容为【' + data + '】');
         // 给客户端返回数据
-        socket.write('服务器：你好,客户端【' + socket.name + '】，已经收到你的消息');
+        socket.write('tcp服务器：你好,客户端【' + socket.name + '】，已经收到你的的数据，内容为【' + data + '】');
 
         //给其他客户端转发消息
-        for (let i = 0; i < clients.length; i++) {
-            if (socket != clients[i]) {
-                clients[i].write('服务器：这是客户端【' + socket.name + '】转发的消息');
-            }
-        }
+        // for (let i = 0; i < clients.length; i++) {
+        //     if (socket != clients[i]) {
+        //         clients[i].write('服务器：这是客户端【' + socket.name + '】转发的消息');
+        //     }
+        // }
     });
 
     /* 服务器与客户端连接断开 */
