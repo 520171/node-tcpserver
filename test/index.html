@@ -5,87 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>websocket client</title>
+    <title>client</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <input type="text" placeholder="输入一个昵称" id="txtUsername">
-    <button id="connectBtn">连接websocket</button>
-    <button id="sendBtn">发送消息</button>
-    <button id="disconnectBtn">断开连接</button>
+    <div class="content">
+        <div class="header">
+            
+        </div>
+        <div class="bottom">
+            <input type="text" name="username" id="username" placeholder="用户名">
+            <input type="button" id="connect" value="连接">
+            <input type="button" id="disconnect" value="断开"><br><br>
+            <textarea name="message" id="message" cols="35" rows="6"></textarea>
+            <input type="button" id="send" value="发送">
+        </div>
+    </div>
+
+
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var username;
-        var count = 0,
-            connected = false,
-            connect = document.getElementById('connectBtn'),
-            disconnect = document.getElementById('disconnectBtn'),
-            send = document.getElementById('sendBtn'),
-            socket = new io.connect('http://localhost:2018');
-
-        socket.on('login', function (data) {
-            connected = true;
-            chat.addOnlineMessage(data);
-        });
-
-        socket.on('logout', function (data) {
-            connected = false;
-            chat.addOfflineMessage(data);
-        });
-
-        //接收websocket服务器消息
-        socket.on('receive websocket', function (data) {
-            console.log('websocket server：' + data.message);
-        });
-
-        socket.on('receive tcp', function (data) {
-            console.log('tcp server：' + data);
-        });
-
-        var chat = {
-            setUserName: function () {
-                if (!username) {
-                    username = document.getElementById('txtUsername').value;
-                    if (username) {
-                        socket.emit('join', username);
-                    }
-                }
-            },
-            addOnlineMessage: function (data) {
-                console.log(data.username + ' connect to websocket server success，当前在线：' + data.onlineUsers);
-            },
-            addOfflineMessage: function (data) {
-                var message = data.username + ' disconnect to websocket server，当前在线：' + data.onlineUsers;
-            },
-            sendMessage: function () {
-                var message = 'brower message ' + count++;
-                if (message && connected) {
-                    //通知websocket服务器
-                    socket.emit('receive', message);
-
-                    //定时发送消息测试
-                    // setTimeout(() => {
-                    //     chat.sendMessage();
-                    // }, 3000);
-                }
-            }
-        };
-
-        //连接
-        connect.onclick = function () {
-            chat.setUserName();
-        }
-
-        disconnect.onclick = function () {
-            location.reload();
-        }
-
-        //发送
-        send.onclick = function () {
-            chat.sendMessage();
-        }
-    </script>
+    <script src="/client.js"></script>
 </body>
 
 </html>

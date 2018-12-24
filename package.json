@@ -2,7 +2,7 @@
   "name": "tcpserver",
   "version": "1.0.0",
   "description": "node.js创建服务器，websocket通信",
-  "main": "app.js",
+  "main": "tcp.js",
   "scripts": {
     "test": "npm test",
     "pm2": "pm2 start processes.json"
