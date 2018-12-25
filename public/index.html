@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>websocket-客户端</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <style>
+        html,body{
+                margin: 2px 4px 0 4px;
+                height: 100%;
+                overflow: hidden;
+            }
+            ::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background-color: #a1a3a9;
+                border-radius: 3px;
+            }
+            .user-form{
+                width:350px;
+            }
+            .user-form .el-form-item{
+                margin-bottom: 12px;
+            }
+            .line{
+                text-align:center
+            }
+            .el-table th{
+                background-color: #f5f7fa !important;
+            }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <el-form class="user-form" label-width="80px">
+            <el-form-item label="默认用户">
+                <span style='color:#409EFF'>{{username}}</span>
+            </el-form-item>
+            <el-form-item label="消息内容" style="width:440px">
+                <el-input type="textarea" v-model="message" :rows="7"></el-input>
+            </el-form-item>
+
+            <el-form-item style="width:500px">
+                <el-button plain type="success" @click="connect">连接websocket</el-button>
+                <el-button plain type="primary" @click="send">发送消息</el-button>
+                <el-button plain type="danger" @click="disconnect">断开连接</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+
+</body>
+<script src="/js/vue.min.js"></script>
+<script src="/js/element-ui.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+    var Main = {
+        data() {
+            return {
+                username: 'user_' + Math.random().toString(32).substr(2),
+                message: '你好，我的名字是',
+                connected: false,
+                count: 1,
+                socket: '',
+            }
+        },
+        mounted() {
+            var self = this;
+            console.log(this.username);
+            this.message = this.message + this.username;
+            var socket = this.socket = new io.connect('http://localhost:2018?token=' + this.username);
+            socket.on('connect', function () {
+                console.log(22222222222222);
+            });
+
+            socket.on('logout', function (data) {
+                self.connected = false;
+                self.addOfflineMessage(data);
+            });
+        },
+        methods: {
+            connect() {
+                var self = this;
+                if (!this.connected) {
+                    if (!this.socket.connected) {
+                        this.socket.open();
+                    }
+                    this.socket.emit('join', this.username, function (data) {
+                        self.connected = true;
+                        console.log('用户【' + data.username + '】已连接websocket server，当前在线：' + data.onlineUsers);
+                    });
+                }
+            },
+            send() {
+                if (this.message && this.connected) {
+                    //通知websocket服务器，并接收返回的data
+                    this.socket.emit('receive', this.message + '。消息' + this.count++, function (data) {});
+                    //定时发送消息测试
+                    // setTimeout(() => {
+                    //     chat.sendMessage();
+                    // }, 3000);
+                } else {
+                    console.log('websocket未连接...');
+                }
+            },
+            disconnect() {
+                this.connected = false;
+                this.socket.close();
+                console.log('用户【' + this.username + '】已断开websocket server连接');
+            },
+            addOnlineMessage(data) {
+                console.log('用户【' + data.username + '】已连接websocket server，当前在线：' + data.onlineUsers);
+            },
+            addOfflineMessage(data) {
+                console.log('用户【' + data.username + '】已断开websocket server连接，当前在线：' + data.onlineUsers);
+            },
+        }
+    }
+    var Ctor = Vue.extend(Main)
+    new Ctor().$mount('#app')
+</script>
+
+
+</html>

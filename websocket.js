@@ -1,11 +1,17 @@
 var config = require('./config'),
-    http = require('http').createServer(httpHandler),
+    express = require('express'),
+    app = express(),
+    path = require('path'),
+    http = require('http').createServer(app),
     fs = require("fs"),
     io = require('socket.io').listen(http),
     net = require('net');
 
 var clients = [];
 var http_port = process.env.PORT || config.http_port;
+
+//Routing
+app.use(express.static(path.join(__dirname, 'public')));
 
 /**
  * http server
@@ -63,30 +69,31 @@ io.on('connection', function (socket) {
         });
     });
 
-    socket.on('receive', function (data) {
+    socket.on('receive', function (data, callback) {
         console.log('浏览器【' + socket.username + '】：' + data);
-        ////websocket服务器回复给浏览器端，暂时屏蔽
-        // socket.emit('receive websocket', {
-        //     username: socket.username,
-        //     message: data
-        // });
+
+        //回调函数，websocket服务器回复给浏览器端
+        callback({
+            username: socket.username,
+            message: data
+        });
         if (tcpClient) {
             tcpClient.write('【' + socket.username + '】：' + data);
         }
         return;
     });
 
-    socket.on('join', function (username) {
+    socket.on('join', function (username, callback) {
         if (addUser) return;
 
         socket.username = username;
         clients.push(socket);
         addUser = true;
         console.log('客户端[' + username + ']连接成功,当前在线人数：' + clients.length);
-        socket.emit('login', {
+        callback({
             username: username,
             onlineUsers: clients.length
-        });
+        })
     });
 
     socket.on('disconnect', function () {
