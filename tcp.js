@@ -1,11 +1,10 @@
-﻿var net = require('net');
+﻿var config = require('./config');
+var net = require('net');
 
-var HOST = '127.0.0.1';
-var PORT = 2020;
 var clients = [];
-
 var server = net.createServer();
-server.listen(PORT, HOST, function () {
+
+server.listen(config.tcp_port, config.tcp_host, function () {
     console.log('tcp服务器正在运行 ' + server.address().address + ':' + server.address().port);
 });
 

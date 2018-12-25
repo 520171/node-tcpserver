@@ -1,12 +1,11 @@
-var http = require('http').createServer(httpHandler),
+var config = require('./config'),
+    http = require('http').createServer(httpHandler),
     fs = require("fs"),
     io = require('socket.io').listen(http),
     net = require('net');
 
 var clients = [];
-var http_port = process.env.PORT || 2018;
-var tcp_HOST = '127.0.0.1';
-var tcp_PORT = 2020;
+var http_port = process.env.PORT || config.http_port;
 
 /**
  * http server
@@ -50,8 +49,8 @@ io.on('connection', function (socket) {
     // tcpClient.setEncoding("ascii");
     tcpClient.setKeepAlive(true);
 
-    tcpClient.connect(tcp_PORT, tcp_HOST, function () {
-        console.info('connect to tcp server success, ' + tcp_HOST + ':' + tcp_PORT);
+    tcpClient.connect(config.tcp_port, config.tcp_host, function () {
+        console.info('connect to tcp server success, ' + config.tcp_host + ':' + config.tcp_port);
 
         //tcp客户端接收消息
         tcpClient.on('data', function (data) {
