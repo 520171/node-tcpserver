@@ -83,6 +83,15 @@
                 self.connected = false;
                 self.addOfflineMessage(data);
             });
+
+            //接收websocket服务器消息
+            socket.on('receive websocket', function (data) {
+                console.log('websocket server：' + data.message);
+            });
+
+            socket.on('receive tcp', function (data) {
+                console.log('tcp server reply：' + data);
+            });
         },
         methods: {
             connect() {
@@ -121,9 +130,9 @@
                 console.log('用户【' + data.username + '】已断开websocket server连接，当前在线：' + data.onlineUsers);
             },
         }
-    }
-    var Ctor = Vue.extend(Main)
-    new Ctor().$mount('#app')
+    };
+    var Ctor = Vue.extend(Main);
+    new Ctor().$mount('#app');
 </script>
 
 
