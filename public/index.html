@@ -22,7 +22,7 @@
                 border-radius: 3px;
             }
             .user-form{
-                width:350px;
+                width:440px;
             }
             .user-form .el-form-item{
                 margin-bottom: 12px;
@@ -30,28 +30,58 @@
             .line{
                 text-align:center
             }
-            .el-table th{
-                background-color: #f5f7fa !important;
+            .el-container{
+                width: 600px;
+                margin: 10px auto;
+            }
+            .el-header{
+                color: #7f7f7f;
+                border: 1px solid #eee;
+                border-bottom: 0;
+                border-radius: 3px;
+            }
+            .el-header, .el-footer {
+                text-align: center;
+                line-height: 60px;
+            }
+            .el-main{
+                border: 1px solid #eee;
+                border-bottom: 0;
+                padding: 5px;
+                font-size: 12px;
+                color: #333;
+                text-align: left;
+                height: 230px;
+                overflow-y: scroll;
             }
     </style>
 </head>
 
 <body>
     <div id="app">
-        <el-form class="user-form" label-width="80px">
-            <el-form-item label="默认用户">
-                <span style='color:#409EFF'>{{username}}</span>
-            </el-form-item>
-            <el-form-item label="消息内容" style="width:440px">
-                <el-input type="textarea" v-model="message" :rows="7"></el-input>
-            </el-form-item>
-
-            <el-form-item style="width:500px">
-                <el-button plain type="success" @click="connect">连接websocket</el-button>
-                <el-button plain type="primary" @click="send">发送消息</el-button>
-                <el-button plain type="danger" @click="disconnect">断开连接</el-button>
-            </el-form-item>
-        </el-form>
+        <el-container>
+            <el-header>
+                {{username}}
+                <template v-if="connected">
+                    <i title="已连接" class="el-icon-circle-check" style="color:#67c23a;"></i>
+                </template>
+                <template v-else>
+                    <i title="离线" class="el-icon-circle-check" style="color:#8f928e;"></i>
+                </template>
+            </el-header>
+            <el-main>
+                <p v-for="msg in msgData">
+                    <span>{{msg.time}}</span><br>
+                    <span style="color:#3a8ee6">{{msg.message}}</span>
+                </p>
+            </el-main>
+            <el-input type="textarea" v-model="message" :rows="2"></el-input>
+            <el-footer>
+                <el-button type="success" @click="connect" :disabled="connected">连接websocket</el-button>
+                <el-button type="primary" @click="send">发送消息</el-button>
+                <el-button type="danger" @click="disconnect" :disabled="connected==false">断开连接</el-button>
+            </el-footer>
+        </el-container>
     </div>
 
 </body>
@@ -64,45 +94,76 @@
         data() {
             return {
                 username: 'user_' + Math.random().toString(32).substr(2),
-                message: '你好，我的名字是',
+                message: '你好，我是浏览器。',
+                msgData: [],
                 connected: false,
                 count: 1,
                 socket: '',
             }
         },
         mounted() {
-            var self = this;
-            console.log(this.username);
-            this.message = this.message + this.username;
-            var socket = this.socket = new io.connect('http://localhost:2018?token=' + this.username);
-            socket.on('connect', function () {
-                console.log(22222222222222);
-            });
-
-            socket.on('logout', function (data) {
-                self.connected = false;
-                self.addOfflineMessage(data);
-            });
-
-            //接收websocket服务器消息
-            socket.on('receive websocket', function (data) {
-                console.log('websocket server：' + data.message);
-            });
-
-            socket.on('receive tcp', function (data) {
-                console.log('tcp server reply：' + data);
-            });
+            // this.message = this.message;
         },
         methods: {
+            initSocket() {
+                var self = this;
+                var socket = this.socket = new io.connect('http://localhost:2018?token=' + this.username);
+                socket.on('connect', () => {
+                    // console.log(socket.id);
+                });
+                socket.on('logout', function (data) {
+                    self.connected = false;
+                });
+                //接收websocket服务器消息
+                socket.on('receive websocket', function (data) {
+                    console.log('websocket server：' + data.message);
+                });
+                //接收tcp服务器消息
+                socket.on('receive tcp', function (data) {
+                    self.msgData.unshift({
+                        color: '#3a8ee6',
+                        time: new Date().Format("yyyy/MM/dd hh:mm:ss"),
+                        message: 'tcp server：' + data
+                    });
+                    console.log('%ctcp server：' + '%c' + data + ' ' + new Date().Format(
+                        "yyyy/MM/dd hh:mm:ss"), 'color:#3a8ee6', 'color:black');
+                });
+                Date.prototype.Format = function (fmt) {
+                    var o = {
+                        "M+": this.getMonth() + 1, //月份   
+                        "d+": this.getDate(), //日   
+                        "h+": this.getHours(), //小时   
+                        "m+": this.getMinutes(), //分   
+                        "s+": this.getSeconds(), //秒   
+                        "q+": Math.floor((this.getMonth() + 3) / 3), //季度   
+                        "S": this.getMilliseconds() //毫秒   
+                    };
+                    if (/(y+)/.test(fmt))
+                        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+                    for (var k in o)
+                        if (new RegExp("(" + k + ")").test(fmt))
+                            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(
+                                ("" + o[k]).length)));
+                    return fmt;
+                };
+            },
             connect() {
                 var self = this;
+                this.initSocket();
                 if (!this.connected) {
                     if (!this.socket.connected) {
                         this.socket.open();
                     }
                     this.socket.emit('join', this.username, function (data) {
                         self.connected = true;
-                        console.log('用户【' + data.username + '】已连接websocket server，当前在线：' + data.onlineUsers);
+                        self.msgData.unshift({
+                            color: '#67c23a',
+                            time: new Date().Format("yyyy/MM/dd hh:mm:ss"),
+                            message: 'websocket server：用户' + data.username + '已连接，当前在线人数：' + data.onlineUsers
+                        });
+                        console.log('%cwebsocket server：' + '%c用户' + data.username + '已连接，当前在线人数：' + data.onlineUsers +
+                            ' ' + new Date().Format("yyyy/MM/dd hh:mm:ss"), 'color:#67c23a',
+                            'color:black');
                     });
                 }
             },
@@ -111,9 +172,9 @@
                     //通知websocket服务器，并接收返回的data
                     this.socket.emit('receive', this.message + '。消息' + this.count++, function (data) {});
                     //定时发送消息测试
-                    // setTimeout(() => {
-                    //     chat.sendMessage();
-                    // }, 3000);
+                    setTimeout(() => {
+                        this.send();
+                    }, 3000);
                 } else {
                     console.log('websocket未连接...');
                 }
@@ -121,19 +182,17 @@
             disconnect() {
                 this.connected = false;
                 this.socket.close();
-                console.log('用户【' + this.username + '】已断开websocket server连接');
-            },
-            addOnlineMessage(data) {
-                console.log('用户【' + data.username + '】已连接websocket server，当前在线：' + data.onlineUsers);
-            },
-            addOfflineMessage(data) {
-                console.log('用户【' + data.username + '】已断开websocket server连接，当前在线：' + data.onlineUsers);
-            },
+                this.msgData.unshift({
+                    color: '#f56c6c',
+                    time: new Date().Format("yyyy/MM/dd hh:mm:ss"),
+                    message: '用户' + this.username + '已断开websocket server连接'
+                });
+                console.log('%c用户【' + this.username + '】已断开websocket server连接', 'color:#f56c6c');
+            }
         }
     };
     var Ctor = Vue.extend(Main);
     new Ctor().$mount('#app');
 </script>
-
 
 </html>
