@@ -7,14 +7,14 @@
         "error_file": "/log/tcpserver.error.log",
         "out_file": "log/tcpserver.out.log",
         "pid_file": "log/tcpserver.pid",
-        "instances": 1,
+        "instances": 4,
         "min_uptime": "200s",
         "max_restarts": 10,
         "cron_restart": "1 0 * * *",
         "watch": false,
         "merge_logs": true,
         "exec_interpreter": "node",
-        "exec_mode": "fork",
+        "exec_mode": "cluster",
         "autorestart": false,
         "vizion": false
     }, {
@@ -25,13 +25,14 @@
         "error_file": "/log/websocket.error.log",
         "out_file": "log/websocket.out.log",
         "pid_file": "log/websocket.pid",
+        "instances": 4,
         "min_uptime": "200s",
         "max_restarts": 10,
         "cron_restart": "1 0 * * *",
         "watch": false,
         "merge_logs": true,
         "exec_interpreter": "node",
-        "exec_mode": "fork",
+        "exec_mode": "cluster",
         "autorestart": false,
         "vizion": false
     }]
